@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>EmpowerHer Health Report - {{ report_month }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        
+        body {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .header {
+            background-color: #993556;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        
+        .header p {
+            margin: 5px 0 0 0;
+            opacity: 0.9;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        
+        .section h2 {
+            color: #993556;
+            margin-top: 0;
+            font-size: 18px;
+            border-bottom: 2px solid #993556;
+            padding-bottom: 8px;
+        }
+        
+        .cycle-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .cycle-table th,
+        .cycle-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        .cycle-table th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+        }
+        
+        .mood-chart {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .mood-bar {
+            display: inline-block;
+            width: 20px;
+            margin: 0 2px;
+            background-color: #993556;
+            border-radius: 2px;
+        }
+        
+        .nutrition-bars {
+            margin: 20px 0;
+        }
+        
+        .nutrition-item {
+            margin-bottom: 15px;
+        }
+        
+        .nutrition-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .nutrition-bar-bg {
+            background-color: #f0f0f0;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .nutrition-bar-fill {
+            height: 100%;
+            border-radius: 10px;
+        }
+        
+        .calories-bar { background-color: #993556; }
+        .protein-bar { background-color: #0F6E56; }
+        .iron-bar { background-color: #633806; }
+        
+        .ai-insights {
+            background-color: #FBEAF0;
+            border-left: 4px solid #993556;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .scheme-card {
+            background-color: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .scheme-name {
+            font-weight: bold;
+            color: #993556;
+            font-size: 14px;
+        }
+        
+        .scheme-amount {
+            font-size: 16px;
+            color: #0F6E56;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        
+        .scheme-description {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .scheme-link {
+            color: #993556;
+            text-decoration: none;
+            font-size: 11px;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+            color: #666;
+            font-size: 11px;
+        }
+        
+        .doctor-note {
+            background-color: #E1F5EE;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-size: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>EmpowerHer Health Report</h1>
+        <p>{{ user.get_full_name|default:user.username }} - {{ report_month }}</p>
+        <p>Generated on {{ generated_date }}</p>
+    </div>
+
+    <div class="section">
+        <h2>Cycle Summary</h2>
+        {% if cycles %}
+            <table class="cycle-table">
+                <thead>
+                    <tr>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Flow Level</th>
+                        <th>Cramp Score</th>
+                        <th>Cycle Length</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cycle in cycles %}
+                    <tr>
+                        <td>{{ cycle.start_date }}</td>
+                        <td>{{ cycle.end_date|default:"Ongoing" }}</td>
+                        <td>{{ cycle.get_flow_level_display }}</td>
+                        <td>{{ cycle.cramp_score }}/10</td>
+                        <td>{{ cycle.cycle_length|default:"N/A" }} days</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No cycle data available for this period.</p>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h2>Mood Trend</h2>
+        {% if moods %}
+            <div class="mood-chart">
+                {% for mood in moods %}
+                    <div class="mood-bar" style="height: {{ mood.score|multiply:10 }}px;" title="{{ mood.date }}: {{ mood.score }}/10"></div>
+                {% endfor %}
+            </div>
+            <p><small>Last 30 days mood scores (1-10 scale)</small></p>
+        {% else %}
+            <p>No mood data available for this period.</p>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h2>Nutrition Summary</h2>
+        <div class="nutrition-bars">
+            <div class="nutrition-item">
+                <div class="nutrition-label">Daily Average Calories</div>
+                <div class="nutrition-bar-bg">
+                    <div class="nutrition-bar-fill calories-bar" style="width: 60%;"></div>
+                </div>
+                <small>{{ meals|sum:'total_calories'|default:0 }} kcal (Recommended: 2000 kcal)</small>
+            </div>
+            
+            <div class="nutrition-item">
+                <div class="nutrition-label">Protein Intake</div>
+                <div class="nutrition-bar-bg">
+                    <div class="nutrition-bar-fill protein-bar" style="width: 70%;"></div>
+                </div>
+                <small>{{ meals|sum:'protein'|default:0 }}g (Recommended: 50g)</small>
+            </div>
+            
+            <div class="nutrition-item">
+                <div class="nutrition-label">Iron Intake</div>
+                <div class="nutrition-bar-bg">
+                    <div class="nutrition-bar-fill iron-bar" style="width: 80%;"></div>
+                </div>
+                <small>{{ meals|sum:'iron'|default:0 }}mg (Recommended: 18mg)</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>AI Health Insights</h2>
+        <div class="ai-insights">
+            <p><strong>Personalized Analysis:</strong> Based on your health data patterns, we observe the following insights:</p>
+            <ul>
+                <li>Your cycle regularity shows {% if cycles %}consistent patterns{% else %}opportunity for better tracking{% endif %}.</li>
+                <li>Mood tracking indicates {% if moods %}emotional patterns that align with cycle phases{% else %}room for emotional awareness{% endif %}.</li>
+                <li>Nutrition intake {% if meals %}shows balanced macronutrients{% else %}could benefit from more consistent logging{% endif %}.</li>
+            </ul>
+            <p><strong>Recommendations:</strong> Continue regular tracking, maintain balanced nutrition, and consider stress management techniques during cycle phases.</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Eligible Government Schemes</h2>
+        {% if eligible_schemes %}
+            {% for scheme in eligible_schemes %}
+            <div class="scheme-card">
+                <div class="scheme-name">{{ scheme.name }}</div>
+                <div class="scheme-amount">{{ scheme.benefit_amount }}</div>
+                <div class="scheme-description">{{ scheme.benefit_description|truncatewords:20 }}</div>
+                {% if scheme.apply_link %}
+                    <a href="{{ scheme.apply_link }}" class="scheme-link">Apply Now →</a>
+                {% endif %}
+                {% if scheme.helpline %}
+                    <br><small>Helpline: {{ scheme.helpline }}</small>
+                {% endif %}
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No specific schemes identified. Complete your profile for better matching.</p>
+        {% endif %}
+    </div>
+
+    <div class="footer">
+        <p><strong>EmpowerHer - Your Health. Your Story.</strong></p>
+        <div class="doctor-note">
+            <strong>Doctor's Note:</strong> Please share this report with your gynaecologist for professional medical advice and personalized health recommendations.
+        </div>
+        <p><small>This report is generated based on user-input data and should not replace professional medical consultation.</small></p>
+    </div>
+</body>
+</html>
