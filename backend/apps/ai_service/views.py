@@ -14,13 +14,10 @@ def chat(request):
         history = serializer.validated_data.get('history', [])
         language = serializer.validated_data.get('language', 'en')
         
-        def generate_response():
-            for chunk in get_health_chat_response(message, language, history):
-                yield f"data: {chunk}\n\n"
-        
-        return StreamingHttpResponse(
-            generate_response(),
-            content_type='text/plain'
-        )
+        full_response = ""
+        for chunk in get_health_chat_response(message, language, history):
+            full_response += chunk
+            
+        return Response({'message': full_response.strip()})
     
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

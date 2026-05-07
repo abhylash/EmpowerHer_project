@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import api from '../api/axios'
 
 export default function MoodJournal() {
-  const { t } = useTranslation()
   
   const [moods, setMoods] = useState([])
   const [patterns, setPatterns] = useState(null)
@@ -65,7 +63,8 @@ export default function MoodJournal() {
     try {
       await api.post('/mental/mood/', {
         score: selectedMood,
-        notes: notes
+        notes: notes,
+        date: new Date().toISOString().split('T')[0]
       })
       
       setSelectedMood(null)
@@ -111,7 +110,7 @@ export default function MoodJournal() {
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">{t('mental')}</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Mental Wellness</h1>
           <p className="text-gray-600">Track your mood and understand your emotional patterns</p>
         </div>
 
@@ -120,7 +119,7 @@ export default function MoodJournal() {
           <div className="lg:col-span-2 space-y-6">
             {/* Mood Logger */}
             <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('how_feeling')}</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">How are you feeling?</h2>
               
               <div className="space-y-6">
                 {/* Mood Selection */}
@@ -133,7 +132,7 @@ export default function MoodJournal() {
                         onClick={() => setSelectedMood(score)}
                         className={`flex flex-col items-center p-3 rounded-lg border-2 transition-all ${
                           selectedMood === score
-                            ? 'border-primary bg-primary-bg'
+                            ? 'border-rose-500 bg-rose-50'
                             : 'border-gray-200 hover:border-gray-300'
                         }`}
                       >
@@ -147,13 +146,13 @@ export default function MoodJournal() {
                 {/* Notes */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t('notes')} (optional)
+                    Notes (optional)
                   </label>
                   <textarea
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500"
                     placeholder="What's on your mind? Any specific feelings or events?"
                   />
                 </div>
@@ -162,7 +161,7 @@ export default function MoodJournal() {
                 <button
                   onClick={submitMood}
                   disabled={!selectedMood}
-                  className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-light disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="w-full bg-rose-500 text-white py-2 px-4 rounded-md hover:bg-rose-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   Log Mood
                 </button>
@@ -232,18 +231,18 @@ export default function MoodJournal() {
             {/* AI Patterns */}
             <div className="bg-white rounded-lg shadow p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">AI {t('insights')}</h2>
+                <h2 className="text-lg font-semibold text-gray-900">AI Insights</h2>
                 <button
                   onClick={fetchPatterns}
                   disabled={patternsLoading}
-                  className="text-sm text-primary hover:text-primary-light disabled:opacity-50"
+                  className="text-sm text-rose-500 hover:text-rose-600 disabled:opacity-50"
                 >
                   {patternsLoading ? 'Analyzing...' : 'Analyze'}
                 </button>
               </div>
               
               {patterns ? (
-                <div className="p-4 bg-primary-bg border-l-4 border-primary rounded">
+                <div className="p-4 bg-rose-50 border-l-4 border-rose-500 rounded">
                   <p className="text-sm text-gray-700">{patterns}</p>
                 </div>
               ) : (
@@ -260,17 +259,17 @@ export default function MoodJournal() {
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Mood Tips</h2>
               <div className="space-y-3">
-                <div className="p-3 bg-primary-bg rounded-lg">
+                <div className="p-3 bg-rose-50 rounded-lg">
                   <p className="text-sm text-gray-700">
                     <strong>Daily tracking:</strong> Consistency helps identify patterns and triggers.
                   </p>
                 </div>
-                <div className="p-3 bg-teal-light rounded-lg">
+                <div className="p-3 bg-teal-50 rounded-lg">
                   <p className="text-sm text-gray-700">
                     <strong>Note context:</strong> Record events that might affect your mood.
                   </p>
                 </div>
-                <div className="p-3 bg-amber-light rounded-lg">
+                <div className="p-3 bg-amber-50 rounded-lg">
                   <p className="text-sm text-gray-700">
                     <strong>Self-care:</strong> Low mood days are normal - be kind to yourself.
                   </p>

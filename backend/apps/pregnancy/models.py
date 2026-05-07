@@ -19,4 +19,5 @@ class PregnancyProfile(models.Model):
     @property
     def current_week(self):
         from datetime import date
-        return min((date.today() - self.lmp_date).days // 7, 40)
+        weeks = (date.today() - self.lmp_date).days // 7
+        return max(1, min(weeks, 40))

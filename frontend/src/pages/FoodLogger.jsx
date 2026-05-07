@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 import api from '../api/axios'
 
 export default function FoodLogger() {
-  const { t } = useTranslation()
   
   const [activeTab, setActiveTab] = useState('search')
   const [meals, setMeals] = useState([])
@@ -102,7 +100,10 @@ export default function FoodLogger() {
 
   const submitMeal = async () => {
     try {
-      await api.post('/fitness/meals/', mealForm)
+      await api.post('/fitness/meals/', {
+        ...mealForm,
+        date: new Date().toISOString().split('T')[0]
+      })
       setMealForm({
         meal_type: 'breakfast',
         food_items: [],
@@ -149,7 +150,7 @@ export default function FoodLogger() {
     <div className="bg-gradient-to-br from-rose-50 via-white to-purple-50 p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('fitness')}</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Fitness & Nutrition</h1>
           <p className="text-gray-600 text-lg">Track your nutrition and maintain a healthy diet</p>
         </div>
 
@@ -193,7 +194,7 @@ export default function FoodLogger() {
                         placeholder="Search for food items..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500"
                       />
                     </div>
 
@@ -225,7 +226,7 @@ export default function FoodLogger() {
                     {/* Image Upload */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {t('upload_food_photo')}
+                        Upload Food Photo
                       </label>
                       <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                         {selectedImage ? (
@@ -239,7 +240,7 @@ export default function FoodLogger() {
                               <button
                                 onClick={analyzeImage}
                                 disabled={analyzing}
-                                className="bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-light disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="bg-rose-500 text-white py-2 px-4 rounded-md hover:bg-rose-600 disabled:opacity-50 disabled:cursor-not-allowed"
                               >
                                 {analyzing ? 'Analyzing...' : 'Analyze Food'}
                               </button>
@@ -296,7 +297,7 @@ export default function FoodLogger() {
                                 carb: item.carb_g,
                                 fat: item.fat_g
                               })}
-                              className="mt-3 w-full bg-primary text-white py-1 px-3 rounded text-sm hover:bg-primary-light transition-colors"
+                              className="mt-3 w-full bg-rose-500 text-white py-1 px-3 rounded text-sm hover:bg-rose-600 transition-colors"
                             >
                               Add to Log
                             </button>
@@ -321,7 +322,7 @@ export default function FoodLogger() {
                   <select
                     value={mealForm.meal_type}
                     onChange={(e) => setMealForm(prev => ({ ...prev, meal_type: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500"
                   >
                     <option value="breakfast">Breakfast</option>
                     <option value="lunch">Lunch</option>
@@ -350,11 +351,11 @@ export default function FoodLogger() {
                 <div className="border-t pt-4">
                   <div className="flex justify-between items-center mb-4">
                     <span className="font-medium">Total Calories:</span>
-                    <span className="text-xl font-bold text-primary">{mealForm.total_calories} kcal</span>
+                    <span className="text-xl font-bold text-rose-500">{mealForm.total_calories} kcal</span>
                   </div>
                   <button
                     onClick={submitMeal}
-                    className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-light transition-colors"
+                    className="w-full bg-rose-500 text-white py-2 px-4 rounded-md hover:bg-rose-600 transition-colors"
                   >
                     Log Meal
                   </button>
@@ -388,7 +389,7 @@ export default function FoodLogger() {
             {/* Nutrition Summary */}
             {nutritionSummary && (
               <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('nutrition_summary')}</h2>
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Nutrition Summary</h2>
                 
                 <div className="space-y-4">
                   <div>
@@ -398,7 +399,7 @@ export default function FoodLogger() {
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div 
-                        className="bg-primary h-2 rounded-full"
+                        className="bg-rose-500 h-2 rounded-full"
                         style={{ width: `${Math.min((nutritionSummary.calories / 2000) * 100, 100)}%` }}
                       ></div>
                     </div>
@@ -406,12 +407,12 @@ export default function FoodLogger() {
 
                   <div>
                     <div className="flex justify-between text-sm mb-1">
-                      <span>{t('protein')}</span>
+                      <span>Protein</span>
                       <span>{Math.round(nutritionSummary.protein)}/50g</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div 
-                        className="bg-teal h-2 rounded-full"
+                        className="bg-teal-500 h-2 rounded-full"
                         style={{ width: `${Math.min((nutritionSummary.protein / 50) * 100, 100)}%` }}
                       ></div>
                     </div>
@@ -419,12 +420,12 @@ export default function FoodLogger() {
 
                   <div>
                     <div className="flex justify-between text-sm mb-1">
-                      <span>{t('carbs')}</span>
+                      <span>Carbs</span>
                       <span>{Math.round(nutritionSummary.carbs)}/250g</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div 
-                        className="bg-amber h-2 rounded-full"
+                        className="bg-amber-500 h-2 rounded-full"
                         style={{ width: `${Math.min((nutritionSummary.carbs / 250) * 100, 100)}%` }}
                       ></div>
                     </div>
@@ -432,12 +433,12 @@ export default function FoodLogger() {
 
                   <div>
                     <div className="flex justify-between text-sm mb-1">
-                      <span>{t('fat')}</span>
+                      <span>Fat</span>
                       <span>{Math.round(nutritionSummary.fat)}/65g</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div 
-                        className="bg-purple h-2 rounded-full"
+                        className="bg-purple-500 h-2 rounded-full"
                         style={{ width: `${Math.min((nutritionSummary.fat / 65) * 100, 100)}%` }}
                       ></div>
                     </div>
@@ -450,17 +451,17 @@ export default function FoodLogger() {
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Nutrition Tips</h2>
               <div className="space-y-3">
-                <div className="p-3 bg-primary-bg rounded-lg">
+                <div className="p-3 bg-rose-50 rounded-lg">
                   <p className="text-sm text-gray-700">
                     <strong>Balanced diet:</strong> Include all food groups for complete nutrition.
                   </p>
                 </div>
-                <div className="p-3 bg-teal-light rounded-lg">
+                <div className="p-3 bg-teal-50 rounded-lg">
                   <p className="text-sm text-gray-700">
                     <strong>Hydration:</strong> Drink at least 8 glasses of water daily.
                   </p>
                 </div>
-                <div className="p-3 bg-amber-light rounded-lg">
+                <div className="p-3 bg-amber-50 rounded-lg">
                   <p className="text-sm text-gray-700">
                     <strong>Portion control:</strong> Use smaller plates and eat slowly.
                   </p>

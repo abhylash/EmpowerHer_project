@@ -1,8 +1,9 @@
+{% load report_tags %}
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
-    <title>EmpowerHer Health Report - {{ report_month }}</title>
+    <title>Comprehensive Clinical Medical Record</title>
     <style>
         @page {
             size: A4;
@@ -172,22 +173,22 @@
 </head>
 <body>
     <div class="header">
-        <h1>EmpowerHer Health Report</h1>
-        <p>{{ user.get_full_name|default:user.username }} - {{ report_month }}</p>
-        <p>Generated on {{ generated_date }}</p>
+        <h1>Comprehensive Clinical Medical Record</h1>
+        <p><strong>Patient:</strong> {{ user.get_full_name|default:user.username }}</p>
+        <p><strong>Date of Issue:</strong> {{ generated_date }}</p>
     </div>
 
     <div class="section">
-        <h2>Cycle Summary</h2>
+        <h2>Menstrual & Gynecological History</h2>
         {% if cycles %}
             <table class="cycle-table">
                 <thead>
                     <tr>
-                        <th>Start Date</th>
-                        <th>End Date</th>
-                        <th>Flow Level</th>
-                        <th>Cramp Score</th>
-                        <th>Cycle Length</th>
+                        <th>Onset Date</th>
+                        <th>Cessation Date</th>
+                        <th>Menstrual Flow Intensity</th>
+                        <th>Dysmenorrhea Severity</th>
+                        <th>Cycle Interval</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -208,7 +209,7 @@
     </div>
 
     <div class="section">
-        <h2>Mood Trend</h2>
+        <h2>Psychological & Affective Status</h2>
         {% if moods %}
             <div class="mood-chart">
                 {% for mood in moods %}
@@ -222,7 +223,7 @@
     </div>
 
     <div class="section">
-        <h2>Nutrition Summary</h2>
+        <h2>Nutritional & Dietary Profile</h2>
         <div class="nutrition-bars">
             <div class="nutrition-item">
                 <div class="nutrition-label">Daily Average Calories</div>
@@ -251,7 +252,7 @@
     </div>
 
     <div class="section">
-        <h2>AI Health Insights</h2>
+        <h2>Clinical Synthesis & Recommendations</h2>
         <div class="ai-insights">
             <p><strong>Personalized Analysis:</strong> Based on your health data patterns, we observe the following insights:</p>
             <ul>
@@ -264,7 +265,7 @@
     </div>
 
     <div class="section">
-        <h2>Eligible Government Schemes</h2>
+        <h2>Healthcare Financial Assistance Programs</h2>
         {% if eligible_schemes %}
             {% for scheme in eligible_schemes %}
             <div class="scheme-card">

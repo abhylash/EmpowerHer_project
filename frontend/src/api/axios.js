@@ -5,7 +5,8 @@ const api = axios.create({
 })
 
 api.interceptors.request.use((config) => {
-  const token = JSON.parse(localStorage.getItem('empowerher-auth') || '{}')?.state?.token
+  const authData = JSON.parse(localStorage.getItem('empowerher-auth') || '{}')
+  const token = authData.state?.token
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
@@ -16,6 +17,8 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 401) {
+      // Clear auth state to prevent redirect loops
+      localStorage.removeItem('empowerher-auth')
       window.location.href = '/login'
     }
     return Promise.reject(error)

@@ -75,7 +75,11 @@ def update_profile(request):
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 def dashboard(request):
-    profile = request.user.profile
+    try:
+        profile = request.user.profile
+    except UserProfile.DoesNotExist:
+        # Create profile if it doesn't exist to prevent 500 errors
+        profile = UserProfile.objects.create(user=request.user)
     
     # Latest cycle
     latest_cycle = CycleLog.objects.filter(user=profile).first()

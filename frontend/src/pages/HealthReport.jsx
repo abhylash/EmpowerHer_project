@@ -1,16 +1,12 @@
 import { useState, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 import api from '../api/axios'
 
 export default function HealthReport() {
-  const { t } = useTranslation()
   
   const [reports, setReports] = useState([])
   const [loading, setLoading] = useState(true)
   const [showGenerateForm, setShowGenerateForm] = useState(false)
-  const [formData, setFormData] = useState({
-    report_month: ''
-  })
+  const [formData, setFormData] = useState({})
 
   useEffect(() => {
     fetchReports()
@@ -29,9 +25,8 @@ export default function HealthReport() {
 
   const generateReport = async () => {
     try {
-      await api.post('/reports/generate/', formData)
-      setShowGenerateForm(false)
-      setFormData({ report_month: '' })
+      await api.post('/reports/generate/', {})
+      fetchReports()
       fetchReports()
     } catch (error) {
       console.error('Failed to generate report:', error)
@@ -106,8 +101,8 @@ export default function HealthReport() {
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">{t('reports')}</h1>
-          <p className="text-gray-600">Generate and download your comprehensive health reports</p>
+          <h1 className="text-3xl font-bold text-gray-900">Health Reports</h1>
+          <p className="text-gray-600">Generate and download your comprehensive medical reports</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -118,36 +113,12 @@ export default function HealthReport() {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-gray-900">Generate New Report</h2>
                 <button
-                  onClick={() => setShowGenerateForm(!showGenerateForm)}
-                  className="text-primary hover:text-primary-light"
+                  onClick={generateReport}
+                  className="bg-rose-500 text-white py-2 px-4 rounded-md hover:bg-rose-600"
                 >
-                  {showGenerateForm ? 'Cancel' : 'New Report'}
+                  Generate Report
                 </button>
               </div>
-
-              {showGenerateForm && (
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      {t('report_month')}
-                    </label>
-                    <input
-                      type="month"
-                      value={formData.report_month}
-                      onChange={(e) => setFormData({ report_month: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                      required
-                    />
-                  </div>
-                  <button
-                    onClick={generateReport}
-                    disabled={!formData.report_month}
-                    className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-light disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {t('generate_report')}
-                  </button>
-                </div>
-              )}
             </div>
 
             {/* Reports List */}
@@ -164,10 +135,7 @@ export default function HealthReport() {
                             <span className="text-2xl">📊</span>
                             <div>
                               <h3 className="font-medium text-gray-900">
-                                {new Date(report.report_month).toLocaleDateString('en-US', { 
-                                  year: 'numeric', 
-                                  month: 'long' 
-                                })} Report
+                                Comprehensive Medical Report
                               </h3>
                               <p className="text-sm text-gray-600">
                                 Generated: {report.generated_at ? 
@@ -189,9 +157,9 @@ export default function HealthReport() {
                           {report.status === 'ready' && report.pdf_url && (
                             <button
                               onClick={() => downloadReport(report.id, report.pdf_url)}
-                              className="inline-flex items-center px-3 py-1 bg-primary text-white text-sm rounded hover:bg-primary-light transition-colors"
+                              className="inline-flex items-center px-3 py-1 bg-rose-500 text-white text-sm rounded hover:bg-rose-600 transition-colors"
                             >
-                              {t('download')}
+                              Download
                             </button>
                           )}
                           {report.status === 'processing' && (
@@ -214,11 +182,11 @@ export default function HealthReport() {
                   <span className="text-4xl mb-4 block">📊</span>
                   <p className="text-gray-600 mb-4">No health reports yet</p>
                   <p className="text-sm text-gray-500 mb-4">
-                    Generate your first monthly health report to track your progress
+                    Generate your first comprehensive medical report to track your overall progress
                   </p>
                   <button
-                    onClick={() => setShowGenerateForm(true)}
-                    className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-light text-sm"
+                    onClick={generateReport}
+                    className="bg-rose-500 text-white px-4 py-2 rounded-md hover:bg-rose-600 text-sm"
                   >
                     Generate Your First Report
                   </button>
@@ -275,17 +243,17 @@ export default function HealthReport() {
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Report Tips</h2>
               <div className="space-y-3">
-                <div className="p-3 bg-primary-bg rounded-lg">
+                <div className="p-3 bg-rose-50 rounded-lg">
                   <p className="text-sm text-gray-700">
                     <strong>Consistent tracking:</strong> Log your health data regularly for comprehensive reports.
                   </p>
                 </div>
-                <div className="p-3 bg-teal-light rounded-lg">
+                <div className="p-3 bg-teal-50 rounded-lg">
                   <p className="text-sm text-gray-700">
-                    <strong>Monthly review:</strong> Generate reports monthly to track progress.
+                    <strong>Regular review:</strong> Generate reports regularly to track overall progress.
                   </p>
                 </div>
-                <div className="p-3 bg-amber-light rounded-lg">
+                <div className="p-3 bg-amber-50 rounded-lg">
                   <p className="text-sm text-gray-700">
                     <strong>Share with doctor:</strong> Use reports for better healthcare consultations.
                   </p>
@@ -298,7 +266,7 @@ export default function HealthReport() {
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Sample Report</h2>
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
                 <span className="text-4xl mb-2 block">📄</span>
-                <p className="text-sm text-gray-600 mb-2">Monthly Health Report</p>
+                <p className="text-sm text-gray-600 mb-2">Comprehensive Medical Report</p>
                 <p className="text-xs text-gray-500">
                   Includes cycles, mood, nutrition, and AI insights
                 </p>

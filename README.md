@@ -4,15 +4,15 @@ EmpowerHer is a comprehensive women's health platform that combines AI-powered i
 
 ## 🌟 Features
 
-- **Cycle Tracking**: Monitor menstrual cycles with predictions and insights
-- **Nutrition & Fitness**: AI-powered food analysis and calorie tracking
-- **Mental Wellness**: Mood tracking with AI pattern analysis
-- **Pregnancy Support**: Week-by-week pregnancy tracking and symptom analysis
-- **Government Schemes**: Personalized scheme recommendations based on eligibility
-- **AI Health Assistant**: Chat-based health advice and support
-- **Health Reports**: Comprehensive monthly health reports with PDF generation
-- **Multi-language Support**: English, Hindi, Kannada, Tamil, Telugu
-- **PWA Ready**: Progressive Web App with offline capabilities
+- **Cycle Tracking**: Monitor menstrual cycles with predictions and insights.
+- **Nutrition & Fitness**: AI-powered food analysis and calorie tracking.
+- **Mental Wellness**: Mood tracking with AI pattern analysis.
+- **Pregnancy Support**: Week-by-week pregnancy tracking and symptom analysis.
+- **Government Schemes**: Personalized scheme recommendations based on eligibility.
+- **AI Health Assistant**: Chat-based health advice and support powered by multi-model OpenRouter fallback logic.
+- **Health Reports**: Comprehensive monthly health reports with PDF generation.
+- **Multi-language Support**: English, Hindi, Kannada, Tamil, Telugu.
+- **PWA Ready**: Progressive Web App with offline capabilities and Service Worker support.
 
 ## 🛠 Tech Stack
 
@@ -20,11 +20,11 @@ EmpowerHer is a comprehensive women's health platform that combines AI-powered i
 - **Framework**: Django 5.2
 - **API**: Django REST Framework 3.15
 - **Authentication**: SimpleJWT
-- **Database**: PostgreSQL
-- **Cache**: Redis
+- **Database**: PostgreSQL / SQLite (Development)
+- **Cache / Message Broker**: Redis
 - **Task Queue**: Celery 5
-- **PDF Generation**: WeasyPrint
-- **AI**: OpenRouter.ai (OpenAI-compatible)
+- **PDF Generation**: WeasyPrint 68.1+
+- **AI**: OpenRouter.ai (OpenAI-compatible endpoints with dynamic model fallback)
 - **SMS**: Twilio
 
 ### Frontend
@@ -40,10 +40,10 @@ EmpowerHer is a comprehensive women's health platform that combines AI-powered i
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Python 3.12+
+- Python 3.10+
 - Node.js 18+
-- PostgreSQL
-- Redis
+- PostgreSQL (or use default SQLite for dev)
+- Redis Server
 - OpenRouter.ai API key
 
 ### Backend Setup
@@ -62,6 +62,7 @@ EmpowerHer is a comprehensive women's health platform that combines AI-powered i
 3. **Install dependencies**
    ```bash
    pip install -r requirements.txt
+   pip install --upgrade weasyprint # Important to prevent PDF generation errors
    ```
 
 4. **Set up environment variables**
@@ -72,9 +73,6 @@ EmpowerHer is a comprehensive women's health platform that combines AI-powered i
 
 5. **Database setup**
    ```bash
-   # Create PostgreSQL database
-   createdb empowerher
-   
    # Run migrations
    python manage.py makemigrations
    python manage.py migrate
@@ -97,7 +95,10 @@ EmpowerHer is a comprehensive women's health platform that combines AI-powered i
 
 9. **Start Celery worker** (in another terminal)
    ```bash
+   # On Linux/Mac:
    celery -A empowerher worker -l info
+   # On Windows:
+   celery -A empowerher worker -l info --pool=solo
    ```
 
 ### Frontend Setup
@@ -114,12 +115,12 @@ EmpowerHer is a comprehensive women's health platform that combines AI-powered i
 
 3. **Start development server**
    ```bash
-   npm run dev
+   npm run dev -- --port 3001
    ```
 
 ## 📱 Access the Application
 
-- **Frontend**: http://localhost:5173
+- **Frontend**: http://localhost:3001
 - **Backend API**: http://localhost:8000
 - **Admin Panel**: http://localhost:8000/admin
 
@@ -161,6 +162,20 @@ VITE_ENVIRONMENT=development
 VITE_ENABLE_PWA=true
 ```
 
+## 🏥 Architecture Highlights
+
+- **Dynamic AI Model Fallback**: The backend dynamically routes AI requests through multiple free models (`poolside/laguna-xs.2:free`, etc.) on OpenRouter to prevent 429 rate-limiting issues natively.
+- **Robust Authentication**: Axios interceptors intelligently clear local storage on `401 Unauthorized` responses to prevent infinite redirect loops.
+- **Background Task Processing**: PDF Health Reports are offloaded to a Celery worker backed by Redis, ensuring the main application thread never freezes.
+- **PWA Service Worker Handling**: Development mode disables aggressive caching to ensure Vite's HMR WebSockets work flawlessly.
+
+## 🛠 Troubleshooting Common Issues
+
+- **PDF Generation Crashes (TypeError: PDF.__init__)**: Upgrade Weasyprint (`pip install --upgrade weasyprint`) to fix `pydyf` incompatibilities.
+- **Reports Taking Forever**: Check if the Celery worker terminal is running. Without it, tasks will stay pending in Redis forever.
+- **Invalid Hook Call / WebSocket Errors in Frontend**: Do a hard refresh (`Ctrl + Shift + R`) to clear the Service Worker cache which might be loading stale chunks of React.
+- **Infinite Login Loop**: Clear your `localStorage` and log in again. This happens if your JWT token exists but is invalid (e.g., if you migrated a fresh database).
+
 ## 🧪 Testing
 
 ### Backend Tests
@@ -173,129 +188,9 @@ python manage.py test
 npm run test
 ```
 
-## 📊 API Endpoints
-
-### Authentication
-- `POST /api/auth/register/` - User registration
-- `POST /api/auth/login/` - User login
-- `POST /api/auth/token/refresh/` - Token refresh
-- `GET /api/auth/profile/` - Get user profile
-- `PATCH /api/auth/profile/update/` - Update profile
-- `GET /api/auth/dashboard/` - Dashboard data
-
-### Cycle Tracking
-- `GET /api/cycles/` - List cycles
-- `POST /api/cycles/` - Create cycle
-- `PATCH /api/cycles/<id>/` - Update cycle
-- `GET /api/cycles/prediction/` - Get predictions
-
-### Fitness & Nutrition
-- `GET /api/fitness/meals/` - List meals
-- `POST /api/fitness/meals/` - Create meal
-- `POST /api/fitness/meals/analyse-photo/` - Analyze food photo
-- `GET /api/fitness/summary/` - Nutrition summary
-
-### Mental Wellness
-- `GET /api/mental/mood/` - List moods
-- `POST /api/mental/mood/` - Create mood
-- `GET /api/mental/patterns/` - Mood patterns analysis
-
-### Pregnancy
-- `GET /api/pregnancy/` - Get pregnancy profile
-- `POST /api/pregnancy/` - Create pregnancy profile
-- `GET /api/pregnancy/weekly/` - Weekly development data
-- `POST /api/pregnancy/symptoms/` - Analyze symptoms
-
-### Government Schemes
-- `GET /api/schemes/eligible/` - Eligible schemes
-- `GET /api/schemes/all/` - All schemes
-
-### Reports
-- `GET /api/reports/` - List reports
-- `POST /api/reports/generate/` - Generate report
-- `GET /api/reports/<id>/download/` - Download report
-
-### AI Chat
-- `POST /api/ai/chat/` - AI chat (streaming)
-
-## 🌍 Internationalization
-
-The app supports 5 languages:
-- English (en)
-- Hindi (hi)
-- Kannada (kn)
-- Tamil (ta)
-- Telugu (te)
-
-Translation files are located in `frontend/public/locales/[lang]/translation.json`
-
-## 📱 PWA Features
-
-- Offline support for basic functionality
-- Installable as native app
-- Push notifications support
-- Responsive design for all devices
-
-## 🔒 Security Features
-
-- JWT-based authentication
-- Password hashing
-- CORS protection
-- Input validation
-- SQL injection prevention
-- XSS protection
-
-## 🚀 Deployment
-
-### Production Deployment
-
-1. **Backend Deployment**
-   - Set `DEBUG=False` in production
-   - Configure production database
-   - Set up Redis cluster
-   - Configure Celery with proper broker
-   - Set up SSL certificates
-   - Configure domain and CORS settings
-
-2. **Frontend Deployment**
-   - Build for production: `npm run build`
-   - Deploy to static hosting
-   - Configure PWA manifest
-   - Set up service worker
-
-### Docker Support
-
-```bash
-# Build and run with Docker Compose
-docker-compose up -d
-```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
 ## 📄 License
 
 This project is licensed under the MIT License.
-
-## 🆘 Support
-
-For support and questions:
-- Email: support@empowerher.com
-- GitHub Issues: [Create an issue](https://github.com/empowerher/empowerher/issues)
-- Documentation: [Wiki](https://github.com/empowerher/empowerher/wiki)
-
-## 🌟 Acknowledgments
-
-- OpenRouter.ai for AI services
-- Django and DRF communities
-- React and Vite teams
-- Tailwind CSS
-- All contributors and users
 
 ---
 

@@ -16,37 +16,43 @@ def report_list(request):
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def generate_report(request):
-    serializer = ReportGenerationSerializer(data=request.data)
-    if serializer.is_valid():
-        # Check if report for this month already exists
-        report_month = serializer.validated_data['report_month']
-        existing_report = HealthReport.objects.filter(
-            user=request.user.profile,
-            report_month=report_month
-        ).first()
-        
-        if existing_report:
+    today = date.today()
+    
+    # Check if a report was already generated today
+    existing_report = HealthReport.objects.filter(
+        user=request.user.profile,
+        report_month=today
+    ).first()
+    
+    if existing_report:
+        if existing_report.status == 'failed':
+            existing_report.status = 'pending'
+            existing_report.save()
+            generate_pdf_report.delay(str(existing_report.id))
             return Response(
-                {'error': 'Report for this month already exists'}, 
-                status=status.HTTP_400_BAD_REQUEST
+                HealthReportSerializer(existing_report).data, 
+                status=status.HTTP_200_OK
             )
-        
-        # Create new report
-        report = HealthReport.objects.create(
-            user=request.user.profile,
-            report_month=report_month,
-            status='pending'
-        )
-        
-        # Trigger Celery task
-        generate_pdf_report.delay(str(report.id))
-        
+        # If it exists and isn't failed, just return the existing one
         return Response(
-            HealthReportSerializer(report).data, 
-            status=status.HTTP_201_CREATED
+            HealthReportSerializer(existing_report).data, 
+            status=status.HTTP_200_OK
         )
     
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # Create new report
+    report = HealthReport.objects.create(
+        user=request.user.profile,
+        report_month=today,
+        status='pending'
+    )
+    
+    # Trigger Celery task
+    generate_pdf_report.delay(str(report.id))
+    
+    return Response(
+        HealthReportSerializer(report).data, 
+        status=status.HTTP_201_CREATED
+    )
 
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])

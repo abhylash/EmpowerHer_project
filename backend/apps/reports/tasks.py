@@ -16,10 +16,10 @@ def generate_pdf_report(report_id):
         user = report.user.user
         profile = report.user
         
-        # Get related data
-        cycles = profile.cycles.all()[:3]
-        moods = profile.moods.all()[:30]
-        meals = profile.meals.all()[:30]
+        # Get comprehensive related data
+        cycles = profile.cycles.all().order_by('-start_date')
+        moods = profile.moods.all().order_by('-date')
+        meals = profile.meals.all().order_by('-date')
         
         # Get eligible schemes
         from apps.schemes.models import GovernmentScheme

@@ -8,20 +8,19 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+.vite/
 
 # Backend (Python/Django)
-__pycache__/
+**/__pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
 build/
 develop-eggs/
-dist/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/
@@ -47,7 +46,7 @@ db.sqlite3-journal
 media/
 staticfiles/
 
-# Environment variables
+# Environment variables - NEVER commit secrets!
 .env
 .env.local
 .env.development

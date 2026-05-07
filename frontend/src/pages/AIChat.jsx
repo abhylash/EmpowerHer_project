@@ -1,20 +1,17 @@
 import { useState, useEffect, useRef } from 'react'
-import { useTranslation } from 'react-i18next'
 import api from '../api/axios'
 
 export default function AIChat() {
-  const { t } = useTranslation()
   
   const [messages, setMessages] = useState([])
   const [inputMessage, setInputMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [streamingMessage, setStreamingMessage] = useState('')
-  const messagesEndRef = useRef(null)
+    const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
 
   useEffect(() => {
     scrollToBottom()
-  }, [messages, streamingMessage])
+  }, [messages])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -35,46 +32,16 @@ export default function AIChat() {
     setIsLoading(true)
 
     try {
-      const response = await fetch('/api/ai/chat/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('empowerher-token')}`
-        },
-        body: JSON.stringify({
-          message: inputMessage,
-          history: messages.slice(-5).map(msg => ({
-            role: msg.sender === 'user' ? 'user' : 'assistant',
-            content: msg.text
-          }))
-        })
+      const response = await api.post('/ai/chat/', {
+        message: inputMessage,
+        history: messages.slice(-5).map(msg => ({
+          role: msg.sender === 'user' ? 'user' : 'assistant',
+          content: msg.text
+        }))
       })
 
-      if (!response.ok) {
-        throw new Error('Failed to send message')
-      }
-
-      const reader = response.body.getReader()
-      const decoder = new TextDecoder()
-      let aiResponse = ''
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-
-        const chunk = decoder.decode(value)
-        const lines = chunk.split('\n')
-        
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const data = line.slice(6)
-            if (data.trim()) {
-              aiResponse += data
-              setStreamingMessage(aiResponse)
-            }
-          }
-        }
-      }
+      // For now, handle as regular response until streaming is properly configured
+      const aiResponse = response.data.response || response.data.message || "I'm here to help with your health questions!"
 
       const aiMessage = {
         id: Date.now() + 1,
@@ -98,7 +65,6 @@ export default function AIChat() {
       setMessages(prev => [...prev, errorMessage])
     } finally {
       setIsLoading(false)
-      setStreamingMessage('')
     }
   }
 
@@ -124,7 +90,7 @@ export default function AIChat() {
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">{t('ai_chat')}</h1>
+          <h1 className="text-3xl font-bold text-gray-900">AI Health Assistant</h1>
           <p className="text-gray-600">Get personalized health advice from EmpowerHer AI</p>
         </div>
 
@@ -132,7 +98,7 @@ export default function AIChat() {
           {/* Chat Header */}
           <div className="border-b border-gray-200 px-6 py-4">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-rose-500 rounded-full flex items-center justify-center">
                 <span className="text-white text-xl">💬</span>
               </div>
               <div>
@@ -177,7 +143,7 @@ export default function AIChat() {
                     <div
                       className={`max-w-lg px-4 py-2 rounded-lg ${
                         message.sender === 'user'
-                          ? 'bg-primary text-white'
+                          ? 'bg-rose-500 text-white'
                           : message.isError
                           ? 'bg-red-100 text-red-800'
                           : 'bg-gray-100 text-gray-900'
@@ -185,7 +151,7 @@ export default function AIChat() {
                     >
                       <p className="text-sm whitespace-pre-wrap">{message.text}</p>
                       <p className={`text-xs mt-1 ${
-                        message.sender === 'user' ? 'text-primary-light' : 'text-gray-500'
+                        message.sender === 'user' ? 'text-rose-200' : 'text-gray-500'
                       }`}>
                         {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </p>
@@ -193,20 +159,7 @@ export default function AIChat() {
                   </div>
                 ))}
                 
-                {streamingMessage && (
-                  <div className="flex justify-start">
-                    <div className="max-w-lg px-4 py-2 rounded-lg bg-gray-100 text-gray-900">
-                      <p className="text-sm whitespace-pre-wrap">{streamingMessage}</p>
-                      <div className="flex space-x-1 mt-1">
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                
-                {isLoading && !streamingMessage && (
+                {isLoading && (
                   <div className="flex justify-start">
                     <div className="px-4 py-2 bg-gray-100 rounded-lg">
                       <div className="flex space-x-1">
@@ -230,15 +183,15 @@ export default function AIChat() {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder={t('chat_placeholder')}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                placeholder="Ask me about your health..."
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 resize-none"
                 rows={2}
                 disabled={isLoading}
               />
               <button
                 onClick={handleSendMessage}
                 disabled={!inputMessage.trim() || isLoading}
-                className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-light disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 bg-rose-500 text-white rounded-md hover:bg-rose-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isLoading ? (
                   <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -260,7 +213,7 @@ export default function AIChat() {
         </div>
 
         {/* Disclaimer */}
-        <div className="mt-4 p-4 bg-amber-light border-l-4 border-amber rounded-lg">
+        <div className="mt-4 p-4 bg-amber-50 border-l-4 border-amber-500 rounded-lg">
           <p className="text-sm text-gray-700">
             <strong>Disclaimer:</strong> This AI assistant provides general health information and is not a substitute for professional medical advice. Always consult with a qualified healthcare provider for medical concerns.
           </p>

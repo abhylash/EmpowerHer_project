@@ -3,13 +3,12 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [
-    react({
-      jsxImportSource: undefined,
-      babel: {
-        plugins: [],
-        presets: []
-      }
-    })
+    react()
   ],
-  server: { proxy: { '/api': 'http://localhost:8000' } }
+  server: { 
+    proxy: { 
+      '/api': 'http://localhost:8000',
+      '/media': 'http://localhost:8000'
+    } 
+  }
 })
