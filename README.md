@@ -1,421 +1,606 @@
-# 🌸 EmpowerHer — AI-Powered Women's Health & Wellness Platform
+# 🌸 EmpowerHer — Complete Windows Setup Guide (For Beginners)
 
-EmpowerHer is a full-stack web application designed to help women track their health, get AI-powered insights, discover government welfare schemes, and generate comprehensive health reports — all in one place.
-
-> Built with **Django** (Backend) + **React + Vite** (Frontend) + **Redis + Celery** (Background Tasks) + **OpenRouter AI** (AI Chat)
-
----
-
-## 🌟 Features
-
-- 🩺 **Menstrual Cycle Tracker** — Log periods, get next period & ovulation predictions
-- 🥗 **Fitness & Nutrition Logger** — Track daily meals and macros (calories, protein, carbs, fat)
-- 🧠 **Mental Wellness Journal** — Log moods daily, view 14-day trend chart, get AI pattern analysis
-- 🤰 **Pregnancy Tracker** — Week-by-week baby development, symptom danger checker
-- 🏛️ **Government Schemes** — Discover schemes you're eligible for based on your profile
-- 💬 **AI Health Assistant** — Chat with an AI trained on Indian women's health context
-- 📄 **Health Report Generator** — Download a full PDF health report
-- 🌐 **Multi-Language** — English, Hindi, Kannada, Tamil, Telugu
-- 📱 **PWA Ready** — Install as a native app on your phone
+> **This guide is written for someone who has NEVER set up a coding project before.**
+> Every single step is explained in detail. Follow them in order and you will have the project running without any errors.
 
 ---
 
-## 🛠️ Tech Stack
+## 📌 What is This Project?
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 18 + Vite 5 + Tailwind CSS |
-| Backend | Django 5 + Django REST Framework |
-| Authentication | JWT (SimpleJWT) |
-| Database | SQLite (dev) / PostgreSQL (prod) |
-| Background Tasks | Celery 5 + Redis |
-| PDF Generation | WeasyPrint |
-| AI | OpenRouter.ai (multi-model fallback) |
-| State Management | Zustand |
-| Charts | Recharts |
+**EmpowerHer** is a women's health platform website. It has:
+- Period tracker
+- Food and nutrition tracker
+- Mood journal
+- Pregnancy tracker
+- AI Health chatbot
+- Government scheme finder
+- PDF health report generator
 
----
+It is built in two parts:
+- **Backend** — the server (Django/Python) that stores data and handles logic
+- **Frontend** — the website (React) that you see in your browser
 
-## 📋 Prerequisites — Install These First
-
-Before cloning, make sure the following are installed on your machine:
-
-### 1. Python 3.10 or higher
-- Download from: https://www.python.org/downloads/
-- ✅ During installation, **check "Add Python to PATH"**
-- Verify: `python --version`
-
-### 2. Node.js 18 or higher
-- Download from: https://nodejs.org/
-- Verify: `node --version` and `npm --version`
-
-### 3. Git
-- Download from: https://git-scm.com/downloads
-- Verify: `git --version`
-
-### 4. Redis Server
-Redis is required for background report generation (Celery).
-
-**On Linux/Mac:**
-```bash
-# Ubuntu/Debian
-sudo apt install redis-server
-sudo service redis-server start
-
-# Mac (with Homebrew)
-brew install redis
-brew services start redis
-```
-
-**On Windows:**
-- Option A (Recommended): Install [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) then run `sudo apt install redis-server && sudo service redis-server start`
-- Option B: Install [Memurai](https://www.memurai.com/) (Windows Redis alternative)
-
-**Verify Redis is running:**
-```bash
-redis-cli ping
-# Should print: PONG
-```
-
-### 5. GTK3 (Windows only — for PDF reports)
-WeasyPrint requires GTK3 on Windows. Follow the [official WeasyPrint Windows guide](https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#windows) to install the GTK3 runtime and add its `/bin` folder to your PATH.
+Both need to be running at the same time.
 
 ---
 
-## 🚀 Installation — Step by Step
+## 🖥️ What You Need (Prerequisites)
 
-### Step 1: Clone the Repository
-
-```bash
-git clone https://github.com/abhylash/EmpowerHer_project.git
-cd EmpowerHer_project
-```
+You need to install **5 things** on your Windows PC before you can run this project. Do each one in order.
 
 ---
 
-### Step 2: Backend Setup (Django)
+### 🔧 STEP 0.1 — Install Python
 
-Open a terminal and navigate to the `backend` folder:
+1. Open your browser and go to: **https://www.python.org/downloads/windows/**
+2. Click the big yellow button that says **"Download Python 3.x.x"**
+3. Open the downloaded `.exe` file
+4. ⚠️ **VERY IMPORTANT — Before clicking anything**, look at the bottom of the installer screen. You will see a checkbox that says **"Add Python to PATH"**. **CHECK THAT BOX.** If you miss this, nothing will work.
+5. Now click **"Install Now"**
+6. Wait for it to finish. Click **"Close"**
 
-```bash
+**✅ How to verify it worked:**
+- Press `Windows + R`, type `cmd`, press Enter (this opens Command Prompt)
+- Type this and press Enter:
+  ```
+  python --version
+  ```
+- You should see something like: `Python 3.12.3`
+- If you see `'python' is not recognized` → you missed the PATH checkbox. Uninstall Python and reinstall it, this time checking that box.
+
+---
+
+### 🔧 STEP 0.2 — Install Node.js
+
+1. Open your browser and go to: **https://nodejs.org/**
+2. Click the button on the **LEFT** that says **"LTS"** (this is the stable version)
+3. Open the downloaded `.msi` file
+4. Keep clicking **Next → Next → Next → Install** (all defaults are fine)
+5. Click **Finish**
+
+**✅ How to verify it worked:**
+- Open a new Command Prompt (close the old one and open again)
+- Type:
+  ```
+  node --version
+  ```
+  You should see: `v20.x.x` or similar
+- Also type:
+  ```
+  npm --version
+  ```
+  You should see: `10.x.x` or similar
+
+---
+
+### 🔧 STEP 0.3 — Install Git
+
+1. Open your browser and go to: **https://git-scm.com/download/win**
+2. The download should start automatically. If not, click **"Click here to download"**
+3. Open the downloaded `.exe` file
+4. Keep clicking **Next** on every screen — all default settings are fine
+5. Click **Install**, then **Finish**
+
+**✅ How to verify it worked:**
+- Open a new Command Prompt
+- Type:
+  ```
+  git --version
+  ```
+  You should see: `git version 2.x.x.windows.x`
+
+---
+
+### 🔧 STEP 0.4 — Install Redis (for Background Tasks)
+
+Redis is needed to generate PDF health reports. On Windows, the easiest way is using **Memurai** (a Windows-compatible version of Redis).
+
+1. Open your browser and go to: **https://www.memurai.com/get-memurai**
+2. Fill in your email and download the installer
+3. Open the downloaded `.exe` file and install it (all defaults are fine)
+4. Memurai will automatically run as a Windows background service — you do not need to start it manually
+
+**✅ How to verify it worked:**
+- Open Command Prompt and type:
+  ```
+  memurai-cli ping
+  ```
+  You should see: `PONG`
+
+> ⚠️ If `memurai-cli` is not found, try:
+  ```
+  redis-cli ping
+  ```
+  Either one should say `PONG`
+
+---
+
+### 🔧 STEP 0.5 — Install GTK3 (for PDF Generation)
+
+The PDF report generator needs a library called GTK3.
+
+1. Go to: **https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer/releases**
+2. Find the latest release and download the file named something like:
+   `gtk3-runtime-x.x.x-x-x-x-ts-win64.exe`
+3. Open and run the installer — click **Next → Next → Install → Finish** (all defaults)
+
+**Now add GTK3 to your system PATH** (this is important):
+
+1. Click the **Windows Start button** and search for: **"environment variables"**
+2. Click **"Edit the system environment variables"**
+3. A window opens — click the button **"Environment Variables..."** at the bottom
+4. In the bottom section called **"System variables"**, scroll down and find **"Path"**
+5. Click on **"Path"** to select it, then click **"Edit..."**
+6. A new window opens — click **"New"**
+7. Type exactly: `C:\Program Files\GTK3-Runtime Win64\bin`
+8. Click **OK** → **OK** → **OK** (close all three windows)
+9. ⚠️ **Restart your computer** after this step
+
+**✅ After restarting, verify:**
+- Open Command Prompt and type:
+  ```
+  python -c "import ctypes; ctypes.CDLL('libgdk-3-0.dll')"
+  ```
+  If no error appears, GTK3 is working ✅
+
+---
+
+## 📥 STEP 1 — Download the Project (Clone from GitHub)
+
+Now you will download the project code from GitHub.
+
+1. Open **Command Prompt** (press `Windows + R`, type `cmd`, press Enter)
+2. Decide where you want to save the project. For example, your Desktop:
+   ```
+   cd Desktop
+   ```
+3. Now clone (download) the project:
+   ```
+   git clone https://github.com/abhylash/EmpowerHer_project.git
+   ```
+4. Wait for it to finish downloading
+5. Go into the project folder:
+   ```
+   cd EmpowerHer_project
+   ```
+
+You should now be inside the project folder. Type `dir` and press Enter — you should see `backend` and `frontend` folders listed.
+
+---
+
+## ⚙️ STEP 2 — Set Up the Backend (Django / Python)
+
+The backend is the server that powers everything. Follow every sub-step carefully.
+
+### 2.1 — Navigate to the Backend Folder
+
+```cmd
 cd backend
 ```
 
-#### 2.1 — Create a Python Virtual Environment
+### 2.2 — Create a Virtual Environment
 
-```bash
+A virtual environment is like a separate clean space for Python packages — so they don't mix with other projects on your PC.
+
+```cmd
 python -m venv venv
 ```
 
-#### 2.2 — Activate the Virtual Environment
+Wait a few seconds. You will see a new folder called `venv` appear inside `backend`.
 
-**On Linux/Mac:**
-```bash
-source venv/bin/activate
-```
+### 2.3 — Activate the Virtual Environment
 
-**On Windows (Command Prompt):**
-```bash
+```cmd
 venv\Scripts\activate
 ```
 
-**On Windows (PowerShell):**
-```bash
-venv\Scripts\Activate.ps1
+✅ **How to know it worked:** Look at the start of your terminal line — it should now show `(venv)` like this:
+```
+(venv) C:\Users\YourName\Desktop\EmpowerHer_project\backend>
 ```
 
-> ✅ You'll see `(venv)` appear at the start of your terminal prompt.
+> ❌ **If you get an error about "scripts being disabled":**
+> 1. Close Command Prompt
+> 2. Right-click the **Start button** → **"Windows PowerShell (Admin)"** or **"Terminal (Admin)"**
+> 3. Run this command:
+>    ```
+>    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+>    ```
+> 4. Type `Y` and press Enter
+> 5. Close PowerShell and reopen regular Command Prompt
+> 6. Navigate back: `cd Desktop\EmpowerHer_project\backend`
+> 7. Try `venv\Scripts\activate` again
 
-#### 2.3 — Install Python Dependencies
+### 2.4 — Install All Python Packages
 
-```bash
+```cmd
 pip install -r requirements.txt
 ```
 
-#### 2.4 — Upgrade WeasyPrint (Important!)
-This step is required to avoid a PDF generation crash:
+This will download and install all the required libraries. It may take **3–7 minutes**. You will see a lot of text scrolling — this is normal. Wait for it to finish.
 
-```bash
+✅ You know it's done when you see your command prompt back at `(venv) C:\...>`
+
+### 2.5 — Upgrade WeasyPrint (Very Important!)
+
+```cmd
 pip install --upgrade weasyprint
 ```
 
-#### 2.5 — Create the Environment Variables File
+> ⚠️ Do NOT skip this step. The version in `requirements.txt` has a bug that crashes PDF generation. This fixes it.
 
-Create a file named `.env` inside the `backend` folder:
+### 2.6 — Create the Secret Configuration File
 
-```bash
-# On Linux/Mac:
-touch .env
+The project needs a file called `.env` (short for "environment") to store secret settings like your API key.
 
-# On Windows (Command Prompt):
+**Create the file:**
+```cmd
 type nul > .env
 ```
 
-Now open the `.env` file in any text editor and paste the following:
+**Open it in Notepad:**
+```cmd
+notepad .env
+```
 
-```env
+A blank Notepad window will open. **Copy and paste ALL of this** into Notepad:
+
+```
 DEBUG=True
 SECRET_KEY=empowerher-super-secret-key-change-this-in-production
 REDIS_URL=redis://localhost:6379/0
 OPENROUTER_API_KEY=your-openrouter-api-key-here
 ```
 
-> 🔑 **Getting an OpenRouter API Key:**
-> 1. Go to https://openrouter.ai/
-> 2. Sign up for a free account
-> 3. Go to https://openrouter.ai/settings/keys
-> 4. Click "Create Key" and copy it
-> 5. Paste it as the value of `OPENROUTER_API_KEY` in your `.env` file
+**Now save the file:** Press `Ctrl + S`, then close Notepad.
 
-#### 2.6 — Run Database Migrations
+> 🔑 **Getting your OpenRouter API Key (for AI chat to work):**
+> 1. Open your browser and go to: **https://openrouter.ai/**
+> 2. Click **"Sign In"** → sign up with Google or email (it's free)
+> 3. After logging in, go to: **https://openrouter.ai/settings/keys**
+> 4. Click **"Create Key"**
+> 5. Give it any name (e.g., "EmpowerHer") and click **Create**
+> 6. **Copy the key** (it looks like `sk-or-v1-abc123...`)
+> 7. Go back to Notepad, open `backend\.env`, and replace `your-openrouter-api-key-here` with your actual key
+> 8. Save the file again
 
-```bash
+### 2.7 — Set Up the Database
+
+Run this command to create all the database tables:
+
+```cmd
 python manage.py migrate
 ```
 
-Expected output: a list of migrations being applied ✅
+You will see a list of items like:
+```
+Applying auth.0001_initial... OK
+Applying auth_app.0001_initial... OK
+...
+```
+This is normal. Wait until it finishes. ✅
 
-#### 2.7 — Seed Government Schemes Data
+### 2.8 — Load Government Schemes Data
 
-```bash
+```cmd
 python manage.py seed_schemes
 ```
 
-This loads all the government welfare schemes into the database.
+This loads all the government welfare schemes into the database so they show up in the app.
 
-#### 2.8 — (Optional) Create an Admin Account
+### 2.9 — Start the Django Server
 
-```bash
-python manage.py createsuperuser
-```
-
-Follow the prompts to create a username and password. You can then access the admin panel at `http://127.0.0.1:8000/admin`
-
-#### 2.9 — Start the Django Backend Server
-
-```bash
+```cmd
 python manage.py runserver
 ```
 
-> ✅ You should see:
-> ```
-> Starting development server at http://127.0.0.1:8000/
-> ```
-> **Keep this terminal open.**
+✅ **You should see:**
+```
+Watching for file changes with StatReloader
+Performing system checks...
+
+System check identified no issues (0 silenced).
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CTRL-BREAK.
+```
+
+🟢 **The backend is now running!**
+
+> 🔒 **DO NOT CLOSE THIS TERMINAL WINDOW.** Leave it running and open a new Command Prompt for the next step.
 
 ---
 
-### Step 3: Start the Background Worker (For PDF Reports)
+## ⚙️ STEP 3 — Start the Background Worker (For PDF Reports)
 
-> ⚠️ **This step is required for Health Report generation to work.** Without it, reports will be stuck on "pending" forever.
+This is a separate process that handles PDF generation in the background.
 
-Open a **NEW terminal window**, navigate to `backend`, activate venv again, and run:
+**Open a brand new Command Prompt window** (keep the old one open):
+- Press `Windows + R` → type `cmd` → press Enter
 
-**On Linux/Mac:**
-```bash
-cd EmpowerHer_project/backend
-source venv/bin/activate
-celery -A empowerher worker -l info
+Navigate to the backend folder:
+```cmd
+cd Desktop\EmpowerHer_project\backend
 ```
 
-**On Windows:**
-```bash
-cd EmpowerHer_project\backend
+Activate the virtual environment (you must do this in every new terminal):
+```cmd
+venv\Scripts\activate
+```
+
+You should see `(venv)` again. Now start the worker:
+
+```cmd
+celery -A empowerher worker -l info --pool=solo
+```
+
+> ⚠️ The `--pool=solo` part is **required on Windows**. Without it, Celery will crash immediately.
+
+✅ **You should see something like:**
+```
+[tasks]
+  . apps.reports.tasks.generate_pdf_report
+
+[2026-xx-xx xx:xx:xx,xxx: INFO/MainProcess] celery@your-pc ready.
+```
+
+🟢 **The background worker is now running!**
+
+> 🔒 **DO NOT CLOSE THIS TERMINAL WINDOW EITHER.** Open a third new one for the frontend.
+
+---
+
+## ⚙️ STEP 4 — Set Up the Frontend (React / Website)
+
+**Open a third new Command Prompt window:**
+- Press `Windows + R` → type `cmd` → press Enter
+
+Navigate to the frontend folder:
+```cmd
+cd Desktop\EmpowerHer_project\frontend
+```
+
+### 4.1 — Install Node.js Packages
+
+```cmd
+npm install
+```
+
+This downloads all the website packages. It may take **2–5 minutes**. A lot of text will scroll — this is normal. Wait until you see your prompt back.
+
+### 4.2 — Start the Website
+
+```cmd
+npm run dev -- --port 3001
+```
+
+✅ **You should see:**
+```
+  VITE v5.x.x  ready in Xs
+
+  ➜  Local:   http://localhost:3001/
+  ➜  Network: use --host to expose
+```
+
+🟢 **The frontend is now running!**
+
+---
+
+## 🌐 STEP 5 — Open the App
+
+Open your browser (Chrome/Edge/Firefox) and go to:
+
+# 👉 http://localhost:3001
+
+You should see the **EmpowerHer** landing page! 🎉
+
+---
+
+## 👤 STEP 6 — Create Your Account
+
+1. Click **"Get Started"** on the landing page
+2. Click **"Register"**
+3. Fill in:
+   - Full Name
+   - Email address
+   - Username (any name, no spaces)
+   - Password (at least 8 characters)
+4. Click **"Register"**
+5. You will be taken to the **Onboarding** page — fill in your details:
+   - Age
+   - State you live in
+   - Health conditions (PCOD, anemia, etc. if any)
+   - Preferred language
+6. Click **"Save"** — you'll now see your **Dashboard!**
+
+---
+
+## 📊 Summary — 3 Terminals Must Stay Open
+
+Every time you use the app, you need **3 Command Prompt windows running**:
+
+| Window | Folder | Command | What it does |
+|--------|--------|---------|-------------|
+| Terminal 1 | `backend\` | `python manage.py runserver` | Runs the Django API server |
+| Terminal 2 | `backend\` | `celery -A empowerher worker -l info --pool=solo` | Generates PDF reports |
+| Terminal 3 | `frontend\` | `npm run dev -- --port 3001` | Runs the React website |
+
+---
+
+## 🔄 Starting the App Next Time
+
+You only need to do the full setup **once**. From next time, just do this:
+
+**Terminal 1 — Open Command Prompt:**
+```cmd
+cd Desktop\EmpowerHer_project\backend
+venv\Scripts\activate
+python manage.py runserver
+```
+
+**Terminal 2 — Open another Command Prompt:**
+```cmd
+cd Desktop\EmpowerHer_project\backend
 venv\Scripts\activate
 celery -A empowerher worker -l info --pool=solo
 ```
 
-> ✅ You should see:
-> ```
-> celery@your-machine ready.
-> ```
-> **Keep this terminal open.**
-
----
-
-### Step 4: Frontend Setup (React)
-
-Open a **THIRD terminal window** and navigate to the `frontend` folder:
-
-```bash
-cd EmpowerHer_project/frontend
-```
-
-#### 4.1 — Install Node Dependencies
-
-```bash
-npm install
-```
-
-This may take 1–2 minutes on the first run.
-
-#### 4.2 — Start the React Development Server
-
-```bash
+**Terminal 3 — Open another Command Prompt:**
+```cmd
+cd Desktop\EmpowerHer_project\frontend
 npm run dev -- --port 3001
 ```
 
-> ✅ You should see:
-> ```
-> VITE v5.x.x  ready in Xs
-> ➜  Local:   http://localhost:3001/
-> ```
+Then go to **http://localhost:3001** in your browser.
 
 ---
 
-## 🌐 Open the App
+## 🔴 Common Errors and How to Fix Them
 
-Once all three services are running, open your browser and go to:
-
-**👉 http://localhost:3001**
-
-You should see the EmpowerHer landing page!
+### ❌ Error: `'python' is not recognized as an internal or external command`
+**Cause:** Python was not added to PATH during installation.
+**Fix:** Uninstall Python → reinstall it → **CHECK the "Add Python to PATH" box** on the first screen.
 
 ---
 
-## 📋 Summary — Terminals to Keep Open
-
-| Terminal | Command | Purpose |
-|----------|---------|---------|
-| Terminal 1 | `python manage.py runserver` | Django backend API |
-| Terminal 2 | `celery -A empowerher worker -l info` | PDF report generation |
-| Terminal 3 | `npm run dev -- --port 3001` | React frontend UI |
-
----
-
-## 🔑 How to Register & Use the App
-
-1. Open `http://localhost:3001`
-2. Click **"Get Started"** or **"Register"**
-3. Fill in your name, email, username, and password
-4. After registering, you'll be taken to an **Onboarding** form — fill in your age, state, health conditions etc. This helps personalise your experience
-5. You'll be redirected to your **Dashboard** — all features are now accessible!
+### ❌ Error: `venv\Scripts\activate` → "running scripts is disabled"
+**Fix:**
+1. Right-click Start → **Windows Terminal (Admin)** or **PowerShell (Admin)**
+2. Run:
+   ```powershell
+   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+   ```
+3. Press `Y` then Enter. Close and reopen normal Command Prompt.
 
 ---
 
-## 📁 Project Structure
-
-```
-EmpowerHer_project/
-├── backend/                   ← Django backend
-│   ├── apps/
-│   │   ├── auth_app/          ← User registration, login, profile
-│   │   ├── cycles/            ← Menstrual cycle tracking
-│   │   ├── fitness/           ← Food logging, nutrition summary
-│   │   ├── mental/            ← Mood journaling, AI pattern analysis
-│   │   ├── pregnancy/         ← Pregnancy tracking, symptom checker
-│   │   ├── schemes/           ← Government schemes database
-│   │   ├── reports/           ← PDF health report generation
-│   │   └── ai_service/        ← OpenRouter AI chat integration
-│   ├── empowerher/            ← Django project settings & URLs
-│   ├── templates/reports/     ← HTML template for PDF reports
-│   ├── requirements.txt       ← Python dependencies
-│   └── .env                   ← Your secret config (not in git)
-│
-└── frontend/                  ← React frontend
-    ├── src/
-    │   ├── pages/             ← All page components
-    │   ├── components/        ← Shared components (Navbar, Footer)
-    │   ├── api/axios.js       ← API client with auth interceptors
-    │   ├── store/             ← Zustand state management
-    │   └── i18n.js            ← Multi-language setup
-    ├── public/locales/        ← Translation files (en, hi, kn, ta, te)
-    └── vite.config.js         ← Vite config (proxies /api to backend)
-```
+### ❌ Error: `pip install` fails with `Microsoft Visual C++ 14.0 required`
+**Fix:** Download and install the **Visual C++ Build Tools**:
+- Go to: https://visualstudio.microsoft.com/visual-cpp-build-tools/
+- Download and install "Build Tools for Visual Studio"
+- Check **"C++ build tools"** and install
 
 ---
 
-## 🔧 Environment Variables Reference
-
-Create `backend/.env` with these variables:
-
-| Variable | Required | Description | Example |
-|----------|----------|-------------|---------|
-| `DEBUG` | Yes | Django debug mode | `True` |
-| `SECRET_KEY` | Yes | Django secret key (any long random string) | `my-super-secret-key-123` |
-| `REDIS_URL` | Yes | Redis connection URL | `redis://localhost:6379/0` |
-| `OPENROUTER_API_KEY` | Yes | API key from openrouter.ai | `sk-or-v1-...` |
-
----
-
-## ❓ Troubleshooting
-
-### ❌ "No module named 'decouple'" or similar import error
-Make sure you activated the virtual environment first:
-```bash
-source venv/bin/activate  # Mac/Linux
-venv\Scripts\activate     # Windows
-```
-
-### ❌ Reports stuck on "Generating..." forever
-The Celery worker is not running. Open a new terminal and run:
-```bash
-# Linux/Mac:
-celery -A empowerher worker -l info
-
-# Windows:
+### ❌ Error: Reports stay on "Generating..." or "Pending" forever
+**Cause:** The Celery worker (Terminal 2) is not running.
+**Fix:** Open a new Command Prompt and run:
+```cmd
+cd Desktop\EmpowerHer_project\backend
+venv\Scripts\activate
 celery -A empowerher worker -l info --pool=solo
 ```
 
-### ❌ PDF generation crashes with `TypeError: PDF.__init__() takes 1 positional argument`
-Run this to fix the WeasyPrint version:
-```bash
+---
+
+### ❌ Error: `TypeError: PDF.__init__() takes 1 positional argument but 3 were given`
+**Cause:** Old WeasyPrint version bug.
+**Fix:** In Terminal 2 (with venv activated):
+```cmd
 pip install --upgrade weasyprint
 ```
-Then restart the Celery worker.
+Restart the Celery worker afterwards.
 
-### ❌ "No endpoints found" or "429 Rate Limit" from AI chat
-OpenRouter free models can get rate-limited. Wait 30–60 seconds and try again. The app uses a 3-model fallback chain to handle this automatically.
+---
 
-### ❌ React shows blank white screen
-Clear the browser cache with a hard refresh:
-- **Windows/Linux:** `Ctrl + Shift + R`
-- **Mac:** `Cmd + Shift + R`
+### ❌ Error: AI Chat shows "I'm having trouble connecting right now"
+**Cause:** Missing or wrong OpenRouter API key.
+**Fix:**
+1. Open `backend\.env` in Notepad
+2. Make sure `OPENROUTER_API_KEY=` has your real key (not the placeholder text)
+3. Save the file and restart Terminal 1 (Ctrl+C then `python manage.py runserver` again)
 
-### ❌ "redis-cli ping" shows "Connection refused"
-Redis is not running. Start it:
-```bash
-# Ubuntu/Debian:
-sudo service redis-server start
+---
 
-# Mac:
-brew services start redis
+### ❌ Error: Blank white screen on http://localhost:3001
+**Fix:** Do a hard refresh to clear the browser cache:
+```
+Ctrl + Shift + R
 ```
 
-### ❌ Port 3001 already in use
-Kill the existing process and restart:
-```bash
-# Find and kill process on port 3001
+---
+
+### ❌ Error: `redis-cli ping` → "Could not connect to Redis"
+**Fix:** Open the **Services** app in Windows:
+1. Press `Windows + R` → type `services.msc` → Enter
+2. Find **"Memurai"** in the list
+3. Right-click → **Start**
+
+---
+
+### ❌ Error: `python manage.py migrate` → `no such table` or database errors
+**Fix:** Delete the old database and start fresh:
+```cmd
+del db.sqlite3
+python manage.py migrate
+python manage.py seed_schemes
+```
+
+---
+
+### ❌ Error: Port 3001 already in use
+**Fix:**
+```cmd
 npx kill-port 3001
 npm run dev -- --port 3001
 ```
 
 ---
 
-## 📱 App Routes
+## 📁 What Each Folder Does
 
-| URL | Page |
-|-----|------|
-| `/` | Landing page |
-| `/register` | Create account |
-| `/login` | Sign in |
-| `/dashboard` | Health overview |
-| `/cycles` | Cycle tracker |
-| `/fitness` | Food & nutrition logger |
-| `/mental` | Mood journal |
-| `/pregnancy` | Pregnancy tracker |
-| `/schemes` | Government schemes |
-| `/reports` | Health report generator |
-| `/ai-chat` | AI Health Assistant |
-| `/onboarding` | Profile setup |
+```
+EmpowerHer_project/
+│
+├── backend/                    ← Python/Django server
+│   ├── apps/
+│   │   ├── auth_app/           ← Login, register, user profiles
+│   │   ├── cycles/             ← Period tracking
+│   │   ├── fitness/            ← Food and nutrition logging
+│   │   ├── mental/             ← Mood journal
+│   │   ├── pregnancy/          ← Pregnancy tracker
+│   │   ├── schemes/            ← Government schemes database
+│   │   ├── reports/            ← PDF health report generation
+│   │   └── ai_service/         ← AI chat (OpenRouter)
+│   ├── empowerher/             ← Django main settings
+│   ├── templates/              ← HTML template for PDF reports
+│   ├── requirements.txt        ← List of Python packages to install
+│   └── .env                    ← Your secret config (you create this)
+│
+└── frontend/                   ← React website
+    ├── src/
+    │   ├── pages/              ← All website pages
+    │   ├── components/         ← Shared components (Navbar, Footer)
+    │   ├── api/                ← API communication
+    │   └── store/              ← App-wide state management
+    ├── public/locales/         ← Language translation files
+    └── package.json            ← List of JavaScript packages to install
+```
 
 ---
 
-## 🤝 Need Help?
+## 🌐 All Pages in the App
 
+| URL to visit | What it shows |
+|-------------|--------------|
+| http://localhost:3001 | Home / Landing page |
+| http://localhost:3001/register | Create new account |
+| http://localhost:3001/login | Log in |
+| http://localhost:3001/dashboard | Your health overview |
+| http://localhost:3001/cycles | Period tracker |
+| http://localhost:3001/fitness | Food & nutrition logger |
+| http://localhost:3001/mental | Mood journal |
+| http://localhost:3001/pregnancy | Pregnancy tracker |
+| http://localhost:3001/schemes | Government schemes |
+| http://localhost:3001/reports | Generate PDF health report |
+| http://localhost:3001/ai-chat | AI Health Assistant chat |
+| http://127.0.0.1:8000/admin | Django admin panel (backend) |
+
+---
+
+## 📬 Need Help?
+
+- Read `FEATURES.md` to understand what each feature does in detail
 - Open an issue at: https://github.com/abhylash/EmpowerHer_project/issues
-- Check `WINDOWS_SETUP.md` for detailed Windows-specific instructions
-- Check `FEATURES.md` for a full explanation of every feature with real-life examples
 
 ---
 
