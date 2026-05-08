@@ -54,35 +54,56 @@ def get_health_chat_response(user_message, language='en', history=None):
 
 def analyse_food_image(base64_image_data):
     if not OPENROUTER_API_KEY:
-        return '[{"dish":"Unknown","calories_kcal":200,"protein_g":10,"carb_g":30,"fat_g":5}]'
-    
+        return '[{"name":"Unknown","calories":200,"protein":10,"carb":30,"fat":5}]'
+
     try:
         prompt = (
-            'You are a dietitian AI specialising in Indian food. '
-            'Identify all dishes. Return ONLY valid JSON array: '
-            '[{"dish":"name","calories_kcal":0,"protein_g":0,"carb_g":0,"fat_g":0}]'
+            'You are a professional dietitian specializing in Indian food. '
+            'Look at this food image carefully and identify ALL visible food items. '
+            'Return ONLY a valid JSON array — no explanation, no markdown, no code blocks. '
+            'Format: [{"name":"Food Name","calories":100,"protein":5,"carb":15,"fat":2}] '
+            'Each field: name (string), calories (number in kcal), protein (grams), carb (grams), fat (grams). '
+            'Be as accurate as possible for Indian cuisine.'
         )
+
+        image_url = f"data:image/jpeg;base64,{base64_image_data}"
+
         headers = {
             "Authorization": f"Bearer {OPENROUTER_API_KEY}",
             "Content-Type": "application/json"
         }
-        
-        data = {
-            "models": ["poolside/laguna-xs.2:free", "inclusionai/ling-2.6-1t:free", "nvidia/nemotron-3-super-120b-a12b:free"],
-            "messages": [{'role':'user','content':prompt}],
-            "max_tokens": 2000
-        }
-        
-        response = requests.post(OPENROUTER_BASE_URL, headers=headers, json=data)
-        
-        if response.status_code == 200:
-            result = response.json()
-            return result['choices'][0]['message']['content']
-        else:
-            return '[{"dish":"Unknown","calories_kcal":200,"protein_g":10,"carb_g":30,"fat_g":5}]'
-            
+
+        # Use vision-capable free models with fallback
+        for model in ["meta-llama/llama-4-scout:free", "google/gemma-3-27b-it:free"]:
+            data = {
+                "model": model,
+                "messages": [{
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": prompt},
+                        {"type": "image_url", "image_url": {"url": image_url}}
+                    ]
+                }],
+                "max_tokens": 1000
+            }
+
+            response = requests.post(OPENROUTER_BASE_URL, headers=headers, json=data, timeout=30)
+
+            if response.status_code == 200:
+                result = response.json()
+                raw = result['choices'][0]['message']['content']
+                # Strip markdown code fences if present
+                raw = raw.replace('```json', '').replace('```', '').strip()
+                return raw
+            else:
+                print(f"Vision model {model} failed: {response.status_code} - {response.text}")
+                continue
+
+        return '[{"name":"Could not detect food","calories":0,"protein":0,"carb":0,"fat":0}]'
+
     except Exception as e:
-        return '[{"dish":"Unknown","calories_kcal":200,"protein_g":10,"carb_g":30,"fat_g":5}]'
+        print(f"analyse_food_image error: {e}")
+        return '[{"name":"Could not detect food","calories":0,"protein":0,"carb":0,"fat":0}]'
 
 def analyse_mood_patterns(mood_logs_json, language='en'):
     if not OPENROUTER_API_KEY:

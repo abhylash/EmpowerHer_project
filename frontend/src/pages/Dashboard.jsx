@@ -97,10 +97,7 @@ export default function Dashboard() {
               </p>
             </div>
             <div className="mt-4 md:mt-0">
-              <div className="bg-white rounded-lg shadow-md px-4 py-2 flex items-center space-x-2">
-                <Heart className="w-5 h-5 text-rose-500" />
-                <span className="text-sm font-medium text-gray-700">Health Score: 85%</span>
-              </div>
+
             </div>
           </div>
         </div>

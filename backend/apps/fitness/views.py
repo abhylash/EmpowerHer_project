@@ -63,9 +63,12 @@ def nutrition_summary(request):
     # Calculate macros from food items
     for meal in meals:
         for food_item in meal.food_items:
-            total_protein += food_item.get('protein_g', 0)
-            total_carbs += food_item.get('carb_g', 0)
-            total_fat += food_item.get('fat_g', 0)
+            # Handle both naming conventions:
+            # 'protein'/'carb'/'fat' → used by the food search database
+            # 'protein_g'/'carb_g'/'fat_g' → used by the AI photo analysis results
+            total_protein += food_item.get('protein', food_item.get('protein_g', 0))
+            total_carbs += food_item.get('carb', food_item.get('carb_g', 0))
+            total_fat += food_item.get('fat', food_item.get('fat_g', 0))
     
     # Mock data for water and steps (would come from other tracking)
     water = 2000  # ml
